@@ -133,4 +133,8 @@ fabric.properties
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
 
+# Compiled Output & Dependencies
+dist
+node_modules
+
 # End of https://www.toptal.com/developers/gitignore/api/webstorm,visualstudiocode

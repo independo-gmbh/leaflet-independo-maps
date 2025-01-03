@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		// Ensure compatibility with older browsers
+		"target": "es5",
+		// ESNext required for Rollup (Rollup handles UMD conversion)
+		"module": "ESNext",
+		// Generate type declaration files (.d.ts)
+		"declaration": true,
+		// Output directory for compiled files
+		"outDir": "./dist",
+		// Enable strict type-checking
+		"strict": true,
+		// Allow default imports from CommonJS modules
+		"esModuleInterop": true,
+		// Skip type-checking of libraries
+		"skipLibCheck": true,
+		// Add "dom" for AMD globals like `define`
+		"lib": ["dom", "es5"]
+	},
+	// Include all TypeScript files in `src` directory
+	"include": [
+		"src/**/*"
+	]
+}
