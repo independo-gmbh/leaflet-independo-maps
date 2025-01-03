@@ -22,8 +22,8 @@
 <script src="./dist/leaflet-independo-maps.js"></script>
 
 <script>
-    // Initialize the map
-    const map = L.map('map').setView([51.505, -0.09], 13);
+    // Initialize the map over vienna
+    const map = L.map('map').setView([48.20849, 16.37208], 15);
 
     // Add a tile layer (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -31,9 +31,10 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Use your plugin
-    const independoLayer = LeafletIndependoMaps.createIndependoMapsLayer();
-    map.addLayer(independoLayer);
+    // Use plugin with default options
+    LeafletIndependoMaps.initIndependoMaps(map);
+
+
 </script>
 </body>
 </html>
