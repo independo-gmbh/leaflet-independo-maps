@@ -95,6 +95,7 @@ export class IndependoMaps {
 		// Add the POI layer group to the map
 		this.map.addLayer(this.poiLayerGroup);
 
+		// TODO: debounce map events to avoid excessive API requests
 		// Attach event listeners
 		this.map.on('moveend zoomend', this.updateMap.bind(this));
 

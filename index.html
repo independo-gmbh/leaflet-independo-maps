@@ -15,26 +15,18 @@
 <body>
 <div id="map"></div>
 
-<!-- Leaflet JS -->
+<!-- Load Leaflet and IndependoMaps -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<!-- Your Plugin -->
 <script src="./dist/leaflet-independo-maps.js"></script>
 
 <script>
-    // Initialize the map over vienna
     const map = L.map('map').setView([48.20849, 16.37208], 15);
-
     // Add a tile layer (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-
-    // Use plugin with default options
     LeafletIndependoMaps.initIndependoMaps(map);
-
-
 </script>
 </body>
 </html>
