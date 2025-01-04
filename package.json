@@ -1,0 +1,73 @@
+{
+	"name": "@independo/leaflet-independo-maps",
+	"version": "1.0.0-dev.3",
+	"description": "Leaflet plugin for displaying points of interest as pictograms.",
+	"keywords": [
+		"leaflet",
+		"typescript",
+		"pictogram",
+		"points-of-interest",
+		"POI",
+		"independo",
+		"map",
+		"map-layer",
+		"interactive-maps"
+	],
+	"homepage": "https://github.com/independo-gmbh/leaflet-independo-maps#readme",
+	"bugs": {
+		"url": "https://github.com/independo-gmbh/leaflet-independo-maps/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/independo-gmbh/leaflet-independo-maps.git"
+	},
+	"license": "MIT",
+	"author": "Independo GmbH",
+	"type": "module",
+	"main": "dist/leaflet-independo-maps.min.js",
+	"module": "dist/leaflet-independo-maps.esm.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist/",
+		"README.md",
+		"LICENSE"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/leaflet-independo-maps.esm.js",
+			"require": "./dist/leaflet-independo-maps.min.js"
+		},
+		"./types": "./dist/index.d.ts"
+	},
+	"peerDependencies": {
+		"leaflet": "^1.9.4"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"clean": "rm -rf dist/",
+		"build": "npm run clean && rollup -c",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"watch": "rollup -c -w",
+		"start": "npm run watch",
+		"prepublishOnly": "npm run build"
+	},
+	"devDependencies": {
+		"@rollup/plugin-commonjs": "^28.0.2",
+		"@rollup/plugin-node-resolve": "^16.0.0",
+		"@rollup/plugin-terser": "^0.4.4",
+		"@rollup/plugin-typescript": "^12.1.2",
+		"rollup-plugin-dts": "^6.1.1",
+		"@saithodev/semantic-release-backmerge": "^4.0.1",
+		"@semantic-release/changelog": "^6.0.3",
+		"conventional-changelog-conventionalcommits": "^8.0.0",
+		"@semantic-release/git": "^10.0.1",
+		"@types/leaflet": "^1.9.15",
+		"eslint": "^9.17.0",
+		"rollup": "^4.29.1",
+		"semantic-release": "^24.2.1",
+		"tslib": "^2.8.1",
+		"typescript": "^5.7.2"
+	}
+}

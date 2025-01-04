@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		// Support for ES2017 syntax (async/await)
+		"target": "es2017",
+		// ESNext required for Rollup (Rollup handles UMD conversion)
+		"module": "ESNext",
+		// Generate type declaration files (.d.ts)
+		"declaration": true,
+		// Output directory for type declaration files
+		"declarationDir": "dist/types",
+		// Output directory for compiled files
+		"outDir": "./dist",
+		// Enable strict type-checking
+		"strict": true,
+		// Allow default imports from CommonJS modules
+		"esModuleInterop": true,
+		// Skip type-checking of libraries
+		"skipLibCheck": true,
+		// Add "dom" for AMD globals like `define`
+		"lib": ["dom", "es2017"]
+	},
+	// Include all TypeScript files in `src` directory
+	"include": [
+		"src/**/*"
+	]
+}
