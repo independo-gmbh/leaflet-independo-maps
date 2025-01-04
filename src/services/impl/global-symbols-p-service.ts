@@ -65,7 +65,7 @@ export class GlobalSymbolsPictogramService implements PictogramService {
     private readonly apiUrl: string;
     private readonly symbolSet: string;
     private readonly includeTypeInDisplayText: boolean;
-    private readonly includeTypeInAriaLabel: boolean;
+    private readonly includeTypeInLabel: boolean;
     private readonly cacheStrategy: "in-memory" | "local-storage";
     private readonly cacheExpiration: number;
     private readonly cachePrefix: string;
@@ -76,7 +76,7 @@ export class GlobalSymbolsPictogramService implements PictogramService {
         this.apiUrl = options?.apiUrl || "https://globalsymbols.com/api/v1/labels/search";
         this.symbolSet = options?.symbolSet || "arasaac";
         this.includeTypeInDisplayText = options?.includeTypeInDisplayText || false;
-        this.includeTypeInAriaLabel = options?.includeTypeInAriaLabel ?? true;
+        this.includeTypeInLabel = options?.includeTypeInAriaLabel ?? true;
         this.cacheStrategy = options?.cacheStrategy || "local-storage";
         this.cacheExpiration = options?.cacheExpiration || 604800000;
         this.cachePrefix = options?.cachePrefix || "global-symbols-pictogram-service";
@@ -127,7 +127,7 @@ export class GlobalSymbolsPictogramService implements PictogramService {
                 id: data[0].id.toString(),
                 url: data[0].picto.image_url,
                 displayText: this.includeTypeInDisplayText ? `${nameify(poi.type)}: ${poi.name}` : poi.name,
-                label: this.includeTypeInAriaLabel ? `${nameify(poi.type)}: ${poi.name}` : poi.name,
+                label: this.includeTypeInLabel ? `${nameify(poi.type)}: ${poi.name}` : poi.name,
                 description: data[0].description,
                 metadata: data[0],
             };

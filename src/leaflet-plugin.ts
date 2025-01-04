@@ -1,18 +1,25 @@
 import L from 'leaflet';
-import {PictogramMarker} from "./pictogram-marker";
+import {pictogramMarker, PictogramMarker, PictogramMarkerOptions} from "./pictogram-marker";
 import {OverpassPOIService, OverpassPOIServiceOptions} from "./services/impl/overpass-poi-service";
 import {
 	GlobalSymbolsPictogramService,
 	GlobalSymbolsPictogramServiceOptions
 } from "./services/impl/global-symbols-p-service";
+import {GridSortingService, GridSortingServiceOptions} from "./services/impl/grid-sorting-service";
 import {PointOfInterestService} from "./services/point-of-interest-service";
 import {PictogramService} from "./services/pictogram-service";
+import {MarkerSortingService} from "./services/marker-sorting-service";
 import {debounceAsync} from "./helpers/promise-helpers";
 
 /**
  * Options for configuring the Independo Maps plugin.
  */
 export interface IndependoMapsOptions {
+
+	/**
+	 * Options for the {@link PictogramMarker}s created by the plugin.
+	 */
+	pictogramMarkerOptions?: PictogramMarkerOptions;
 
 	/**
 	 * Options for configuring the default {@link OverpassPOIService}.
@@ -48,6 +55,15 @@ export interface IndependoMapsOptions {
 	globalSymbolsServiceOptions?: GlobalSymbolsPictogramServiceOptions;
 
 	/**
+	 * Options for configuring the default {@link GridSortingService}.
+	 *
+	 * @remarks This option is used to define the layout direction of the pictograms when adding them to the DOM.
+	 * This is relevant for screen readers and keyboard navigation. On the
+	 * @example {lr: "lr", tb: "tb"}
+	 */
+	gridSortServiceOptions?: GridSortingServiceOptions;
+
+	/**
 	 * Custom implementation of the {@link PointOfInterestService}.
 	 *
 	 * Use this field to provide your own service for fetching points of interest (POIs).
@@ -74,6 +90,18 @@ export interface IndependoMapsOptions {
 	pictogramService?: PictogramService;
 
 	/**
+	 * Custom implementation of the {@link MarkerSortingService}.
+	 *
+	 * Use this field to provide your own service for sorting markers on the map.
+	 * If not provided, the plugin will default to an instance of {@link GridSortingService}.
+	 *
+	 * @remarks The sorting order does not affect the visual position of the markers on the map, but rather the order in
+	 * which they are added to the DOM. This is relevant for screen readers and keyboard navigation. One can imagine
+	 * use cases where the markers should be sorted in a specific order, e.g. by distance to the user's location.
+	 */
+	markerSortingService?: MarkerSortingService;
+
+	/**
 	 * Debounce interval in milliseconds for updating the map after a move or zoom event.
 	 *
 	 * @remarks This interval prevents the map from updating too frequently and causing performance issues.
@@ -84,10 +112,12 @@ export interface IndependoMapsOptions {
 
 export class IndependoMaps {
 	private readonly debounceInterval: number;
-	private map: L.Map;
+	private readonly map: L.Map;
 	private readonly poiLayerGroup: L.LayerGroup<PictogramMarker>;
 	private readonly poiService: PointOfInterestService;
 	private readonly pictogramService: PictogramService;
+	private readonly markerSortingService: MarkerSortingService;
+	private readonly pictogramMarkerOptions?: PictogramMarkerOptions;
 
 	constructor(map: L.Map, options?: IndependoMapsOptions) {
 		this.debounceInterval = options?.debounceInterval || 300;
@@ -96,6 +126,9 @@ export class IndependoMaps {
 
 		this.poiService = options?.poiService || new OverpassPOIService(options?.overpassServiceOptions);
 		this.pictogramService = options?.pictogramService || new GlobalSymbolsPictogramService(options?.globalSymbolsServiceOptions);
+		this.markerSortingService = options?.markerSortingService || new GridSortingService(options?.gridSortServiceOptions);
+
+		this.pictogramMarkerOptions = options?.pictogramMarkerOptions;
 
 		// Add the POI layer group to the map
 		this.map.addLayer(this.poiLayerGroup);
@@ -118,13 +151,13 @@ export class IndependoMaps {
 			const latlng = L.latLng(poi.latitude, poi.longitude);
 			const pictogram = await this.pictogramService.getPictogram(poi);
 			if (!pictogram) return undefined;
-			return new PictogramMarker(latlng, {pictogram, pointOfInterest: poi});
+			return pictogramMarker(latlng, pictogram, poi, this.pictogramMarkerOptions);
 		});
 
-		const layers = (await Promise.all(markerPromises))
+		let layers = (await Promise.all(markerPromises))
 			.filter((layer): layer is PictogramMarker => layer !== undefined);
 
-		// TODO: order pictograms into grid so that tab order is logical (left to right, top to bottom)
+		layers = await this.markerSortingService.sortMarkers(layers, this.map);
 
 		this.poiLayerGroup.clearLayers();
 		layers.forEach((layer) => this.poiLayerGroup.addLayer(layer));

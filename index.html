@@ -26,7 +26,14 @@
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-    LeafletIndependoMaps.initIndependoMaps(map);
+
+    LeafletIndependoMaps.initIndependoMaps(map, {
+        pictogramMarkerOptions: {
+            onClick: (pictogram, pointOfInterest) => {
+                console.log('Pictogram clicked', pictogram, pointOfInterest);
+            }
+        }
+    });
 </script>
 </body>
 </html>
