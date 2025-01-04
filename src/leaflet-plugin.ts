@@ -7,6 +7,7 @@ import {
 } from "./services/impl/global-symbols-p-service";
 import {PointOfInterestService} from "./services/point-of-interest-service";
 import {PictogramService} from "./services/pictogram-service";
+import {debounceAsync} from "./helpers/promise-helpers";
 
 /**
  * Options for configuring the Independo Maps plugin.
@@ -71,33 +72,36 @@ export interface IndependoMapsOptions {
 	 * ```
 	 */
 	pictogramService?: PictogramService;
+
+	/**
+	 * Debounce interval in milliseconds for updating the map after a move or zoom event.
+	 *
+	 * @remarks This interval prevents the map from updating too frequently and causing performance issues.
+	 * @default 300
+	 */
+	debounceInterval?: number;
 }
 
 export class IndependoMaps {
+	private readonly debounceInterval: number;
 	private map: L.Map;
 	private readonly poiLayerGroup: L.LayerGroup<PictogramMarker>;
 	private readonly poiService: PointOfInterestService;
 	private readonly pictogramService: PictogramService;
 
 	constructor(map: L.Map, options?: IndependoMapsOptions) {
+		this.debounceInterval = options?.debounceInterval || 300;
 		this.map = map;
 		this.poiLayerGroup = new L.LayerGroup<PictogramMarker>();
 
-		// Initialize services based on provided options or defaults
-		this.poiService =
-			options?.poiService ||
-			new OverpassPOIService(options?.overpassServiceOptions || {defaultLimit: 10});
-
-		this.pictogramService =
-			options?.pictogramService ||
-			new GlobalSymbolsPictogramService(options?.globalSymbolsServiceOptions || {});
+		this.poiService = options?.poiService || new OverpassPOIService(options?.overpassServiceOptions);
+		this.pictogramService = options?.pictogramService || new GlobalSymbolsPictogramService(options?.globalSymbolsServiceOptions);
 
 		// Add the POI layer group to the map
 		this.map.addLayer(this.poiLayerGroup);
 
-		// TODO: debounce map events to avoid excessive API requests
-		// Attach event listeners
-		this.map.on('moveend zoomend', this.updateMap.bind(this));
+		const debouncedUpdateMap = debounceAsync(this.updateMap.bind(this), this.debounceInterval);
+		this.map.on('moveend zoomend', debouncedUpdateMap);
 
 		// Perform an initial update
 		this.updateMap();
