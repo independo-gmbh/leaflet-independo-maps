@@ -23,25 +23,44 @@
 	},
 	"license": "MIT",
 	"author": "Independo GmbH",
-	"type": "commonjs",
-	"main": "dist/leaflet-independo-maps.js",
+	"type": "module",
+	"main": "dist/leaflet-independo-maps.min.js",
 	"module": "dist/leaflet-independo-maps.esm.js",
 	"types": "dist/index.d.ts",
+	"files": [
+		"dist/",
+		"README.md",
+		"LICENSE"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/leaflet-independo-maps.esm.js",
+			"require": "./dist/leaflet-independo-maps.min.js"
+		},
+		"./types": "./dist/index.d.ts"
+	},
+	"peerDependencies": {
+		"leaflet": "^1.9.4"
+	},
 	"scripts": {
-		"build": "rollup -c",
+		"clean": "rm -rf dist/",
+		"build": "npm run clean && rollup -c",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch": "rollup -c -w",
 		"start": "npm run watch",
 		"prepublishOnly": "npm run build"
 	},
 	"devDependencies": {
+		"@rollup/plugin-commonjs": "^28.0.2",
+		"@rollup/plugin-node-resolve": "^16.0.0",
+		"@rollup/plugin-terser": "^0.4.4",
 		"@rollup/plugin-typescript": "^12.1.2",
+		"rollup-plugin-dts": "^6.1.1",
 		"@saithodev/semantic-release-backmerge": "^4.0.1",
 		"@semantic-release/changelog": "^6.0.3",
 		"@semantic-release/git": "^10.0.1",
 		"@types/leaflet": "^1.9.15",
 		"eslint": "^9.17.0",
-		"leaflet": "^1.9.4",
 		"rollup": "^4.29.1",
 		"semantic-release": "^24.2.1",
 		"tslib": "^2.8.1",

@@ -1,3 +1,4 @@
-import {createIndependoMapsLayer} from './leaflet-plugin';
+import {initIndependoMaps} from './leaflet-plugin';
+import {PictogramMarker} from './pictogram-marker';
 
-export {createIndependoMapsLayer};
+export {initIndependoMaps, PictogramMarker};
