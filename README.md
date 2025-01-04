@@ -123,20 +123,25 @@ import L from 'leaflet';
 const map = L.map('map').setView([48.20849, 16.37208], 13);
 
 const options = {
-    overpassServiceOptions: {
-        apiUrl: "https://custom-overpass-api.com",
-        defaultLimit: 50,
-        defaultTypes: ["amenity", "shop", "tourism"]
-    },
-    globalSymbolsServiceOptions: {
-        symbolSet: "sclera",
-        includeTypeInDisplayText: true
-    },
-    gridSortServiceOptions: {
-        lr: "lr",
-        tb: "tb",
-        rowThreshold: 64
+  overpassServiceOptions: {
+    apiUrl: "https://custom-overpass-api.com",
+    defaultLimit: 50,
+    defaultTypes: ["amenity", "shop", "tourism"]
+  },
+  globalSymbolsServiceOptions: {
+    symbolSet: "sclera",
+    includeTypeInDisplayText: true
+  },
+  gridSortServiceOptions: {
+    lr: "lr",
+    tb: "tb",
+    rowThreshold: 64
+  },
+  pictogramMarkerOptions: {
+    onClick: (pictogram, pointOfInterest) => {
+      console.log(pictogram, pointOfInterest);
     }
+  }
 };
 
 const independoMaps = initIndependoMaps(map, options);
@@ -159,6 +164,7 @@ Initializes the plugin and returns an instance of `IndependoMaps`.
 - `pictogramService`: A custom implementation of `PictogramService`.
 - `overpassServiceOptions`: Configuration for the
   default [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)-based POI service.
+- `pictogramMarkerOptions`: Configuration for the pictogram markers.
 - `globalSymbolsServiceOptions`: Configuration for the default [Global Symbols API](https://globalsymbols.com/api/docs)
   -based pictogram service.
 - `gridSortServiceOptions`: Configuration for sorting markers into a 2D grid layout.

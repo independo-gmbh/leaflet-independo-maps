@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import {PictogramMarker} from "./pictogram-marker";
+import {pictogramMarker, PictogramMarker, PictogramMarkerOptions} from "./pictogram-marker";
 import {OverpassPOIService, OverpassPOIServiceOptions} from "./services/impl/overpass-poi-service";
 import {
 	GlobalSymbolsPictogramService,
@@ -15,6 +15,11 @@ import {debounceAsync} from "./helpers/promise-helpers";
  * Options for configuring the Independo Maps plugin.
  */
 export interface IndependoMapsOptions {
+
+	/**
+	 * Options for the {@link PictogramMarker}s created by the plugin.
+	 */
+	pictogramMarkerOptions?: PictogramMarkerOptions;
 
 	/**
 	 * Options for configuring the default {@link OverpassPOIService}.
@@ -112,6 +117,7 @@ export class IndependoMaps {
 	private readonly poiService: PointOfInterestService;
 	private readonly pictogramService: PictogramService;
 	private readonly markerSortingService: MarkerSortingService;
+	private readonly pictogramMarkerOptions?: PictogramMarkerOptions;
 
 	constructor(map: L.Map, options?: IndependoMapsOptions) {
 		this.debounceInterval = options?.debounceInterval || 300;
@@ -121,6 +127,8 @@ export class IndependoMaps {
 		this.poiService = options?.poiService || new OverpassPOIService(options?.overpassServiceOptions);
 		this.pictogramService = options?.pictogramService || new GlobalSymbolsPictogramService(options?.globalSymbolsServiceOptions);
 		this.markerSortingService = options?.markerSortingService || new GridSortingService(options?.gridSortServiceOptions);
+
+		this.pictogramMarkerOptions = options?.pictogramMarkerOptions;
 
 		// Add the POI layer group to the map
 		this.map.addLayer(this.poiLayerGroup);
@@ -143,7 +151,7 @@ export class IndependoMaps {
 			const latlng = L.latLng(poi.latitude, poi.longitude);
 			const pictogram = await this.pictogramService.getPictogram(poi);
 			if (!pictogram) return undefined;
-			return new PictogramMarker(latlng, {pictogram, pointOfInterest: poi});
+			return pictogramMarker(latlng, pictogram, poi, this.pictogramMarkerOptions);
 		});
 
 		let layers = (await Promise.all(markerPromises))

@@ -4,33 +4,72 @@ import {PointOfInterest} from "./models/point-of-interest";
 
 export interface PictogramMarkerOptions {
     /**
-     * The {@link Pictogram} to display.
+     * Whether to add an aria description to the pictogram marker.
+     *
+     * @default true
      */
-    pictogram: Pictogram;
+    addAriaDescription?: boolean;
 
     /**
-     * The {@link PointOfInterest} that the pictogram is associated with.
+     * Whether to bring the pictogram marker to the front when clicked.
+     *
+     * @default true
      */
-    pointOfInterest?: PointOfInterest;
+    bringToFrontOnClick?: boolean;
+
+    /**
+     * Whether to bring the pictogram marker to the front when hovered.
+     *
+     * @default true
+     */
+    bringToFrontOnHover?: boolean;
+
+    /**
+     * Whether to bring the pictogram marker to the front when focused.
+     *
+     * @default true
+     */
+    bringToFrontOnFocus?: boolean;
+
+    /**
+     * A callback function that is called when the pictogram marker is clicked.
+     *
+     * @default undefined
+     */
+    onClick?: (pictogram: Pictogram, pointOfInterest?: PointOfInterest) => void;
 }
 
 /**
  * A custom Leaflet layer that displays a pictogram at a given latlng.
  */
 export class PictogramMarker extends L.Layer {
+    private readonly addAriaDescription: boolean;
+    private readonly bringToFrontOnClick: boolean;
+    private readonly bringToFrontOnHover: boolean;
+    private readonly bringToFrontOnFocus: boolean;
+    private readonly onClick: ((pictogram: Pictogram, pointOfInterest?: PointOfInterest) => void) | undefined;
+
     private readonly _latlng: L.LatLng;
-    private readonly _options: PictogramMarkerOptions;
-    private container: HTMLDivElement | null = null;
+    private readonly _pictogram: Pictogram;
+    private readonly _pointOfInterest: PointOfInterest | undefined;
+
+    private container?: HTMLDivElement;
     private map: Map | null = null;
 
     getLatLng(): L.LatLng {
         return this._latlng;
     }
 
-    constructor(latlng: LatLngExpression, options: PictogramMarkerOptions) {
+    constructor(latlng: LatLngExpression, pictogram: Pictogram, pointOfInterest?: PointOfInterest, options?: PictogramMarkerOptions) {
         super();
         this._latlng = L.latLng(latlng);
-        this._options = options;
+        this._pictogram = pictogram;
+        this._pointOfInterest = pointOfInterest;
+        this.addAriaDescription = options?.addAriaDescription ?? true;
+        this.bringToFrontOnClick = options?.bringToFrontOnClick ?? true;
+        this.bringToFrontOnHover = options?.bringToFrontOnHover ?? true;
+        this.bringToFrontOnFocus = options?.bringToFrontOnFocus ?? true;
+        this.onClick = options?.onClick;
     }
 
     onAdd(map: Map): this {
@@ -43,11 +82,11 @@ export class PictogramMarker extends L.Layer {
         // Create the black-bordered box
         const box = document.createElement("div");
         box.setAttribute("role", "group");
-        box.setAttribute("aria-label", `${this._options.pictogram.label || this._options.pictogram.displayText}`);
-        if (this._options.pictogram.description) {
+        box.setAttribute("aria-label", `${this._pictogram.label || this._pictogram.displayText}`);
+        if (this.addAriaDescription && this._pictogram.description) {
             // add a hidden span with the description, generate a random id and add aria-describedby to the box
             const description = document.createElement("span");
-            description.textContent = this._options.pictogram.description;
+            description.textContent = this._pictogram.description;
             description.style.display = "none";
             const id = Math.random().toString(36).substring(7);
             description.id = id;
@@ -64,10 +103,20 @@ export class PictogramMarker extends L.Layer {
         box.style.borderRadius = "5px"; // Rounded corners
         box.style.background = "white"; // White background
         box.style.boxShadow = "0 2px 4px rgba(0,0,0,0.5)"; // Add shadow for depth
+        if (this.onClick) {
+            box.style.cursor = "pointer";
+            box.setAttribute("role", "button");
+            box.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    this.onClick?.(this._pictogram, this._pointOfInterest);
+                }
+            });
+            box.addEventListener("click", () => this.onClick?.(this._pictogram, this._pointOfInterest));
+        }
 
         // Create the image element
         const img = document.createElement("img");
-        img.src = this._options.pictogram.url;
+        img.src = this._pictogram.url;
         img.alt = ""; // Empty alt attribute for decorative image
         img.setAttribute("aria-hidden", "true"); // Ignore by assistive technologies
         img.style.maxWidth = "100px"; // Adjust as needed
@@ -75,7 +124,7 @@ export class PictogramMarker extends L.Layer {
 
         // Create the label
         const label = document.createElement("div");
-        label.textContent = this._options.pictogram.displayText;
+        label.textContent = this._pictogram.displayText;
         label.style.fontSize = "12px";
         label.style.marginTop = "5px";
         label.style.textAlign = "center";
@@ -108,7 +157,24 @@ export class PictogramMarker extends L.Layer {
         this.updatePosition();
         map.on("zoomend moveend", this.updatePosition, this);
 
-        // TODO: bring to front on click or hover
+        if (this.bringToFrontOnClick) {
+            this.container.addEventListener("click", () => this.toggleInFront(this.container));
+            this.container.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    this.toggleInFront(this.container);
+                }
+            });
+        }
+
+        if (this.bringToFrontOnHover) {
+            this.container.addEventListener("mouseenter", () => this.toggleInFront(this.container));
+            this.container.addEventListener("mouseleave", () => this.toggleInFront(this.container));
+        }
+
+        if (this.bringToFrontOnFocus) {
+            box.addEventListener("focus", () => this.toggleInFront(this.container));
+            box.addEventListener("blur", () => this.toggleInFront(this.container));
+        }
 
         return this;
     }
@@ -134,8 +200,18 @@ export class PictogramMarker extends L.Layer {
         this.container.style.left = `${position.x - containerWidth / 2}px`;
         this.container.style.top = `${position.y - containerHeight}px`;
     }
+
+    private toggleInFront(box: HTMLDivElement | undefined): void {
+        if (box) {
+            if (box.style.zIndex === "1000") {
+                box.style.zIndex = "auto";
+            } else {
+                box.style.zIndex = "1000";
+            }
+        }
+    }
 }
 
-export function pictogramMarker(latlng: LatLngExpression, options: PictogramMarkerOptions): PictogramMarker {
-    return new PictogramMarker(latlng, options);
+export function pictogramMarker(latlng: LatLngExpression, pictogram: Pictogram, pointOfInterest?: PointOfInterest, options?: PictogramMarkerOptions): PictogramMarker {
+    return new PictogramMarker(latlng, pictogram, pointOfInterest, options);
 }
