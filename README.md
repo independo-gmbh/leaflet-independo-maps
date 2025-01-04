@@ -15,6 +15,8 @@ recognizable pictograms sourced from external services like
 the [Global Symbols API](https://globalsymbols.com/api/docs). It is designed to be lightweight, customizable, and
 developer-friendly.
 
+A demo of the plugin is available [here](https://independo-gmbh.github.io/leaflet-independo-maps/).
+
 ---
 
 ## Features
