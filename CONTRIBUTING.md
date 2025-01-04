@@ -14,7 +14,7 @@ started and ensure a smooth collaboration.
 - [Commit Messages](#commit-messages)
 - [Pull Request Guidelines](#pull-request-guidelines)
 - [Reporting Issues](#reporting-issues)
-- [Code of Conduct](#code-of-conduct)
+- [Code of Conduct](https://github.com/independo-gmbh/leaflet-independo-maps?tab=coc-ov-file#contributor-covenant-code-of-conduct)
 
 ---
 
