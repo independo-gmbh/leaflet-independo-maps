@@ -11,10 +11,9 @@
 A [LeafletJS](http://leafletjs.com/) plugin for displaying points of interest (POIs) as pictograms on a map.
 
 This plugin enables developers to overlay a custom layer of POIs onto a Leaflet map, displaying them as easily
-recognizable pictograms sourced from external services like the Global Symbols API. It is designed to be lightweight,
-customizable, and developer-friendly.
-
-**Note**: The plugin currently supports only English.
+recognizable pictograms sourced from external services like
+the [Global Symbols API](https://globalsymbols.com/api/docs). It is designed to be lightweight, customizable, and
+developer-friendly.
 
 ---
 
@@ -23,7 +22,10 @@ customizable, and developer-friendly.
 - **Customizable Layers**: Display POIs as pictograms on a map with options to customize the marker's design.
 - **Pluggable Architecture**: Use your own services for fetching POIs or pictograms via the provided service interfaces.
 - **Caching Mechanism**: Supports both in-memory and local-storage caching for enhanced performance.
-- **Accessibility**: Pictograms include ARIA labels for better accessibility.
+- **Accessibility**: Pictograms include ARIA labels and descriptions if provided by the pictogram source. *Note*: The
+  default implementations in the plugin currently support only English for the ARIA labels and descriptions.
+- **Logical Ordering**: Markers are added to the DOM in a customizable, logical order to improve accessibility for
+  screen readers and keyboard navigation.
 
 ---
 
@@ -129,6 +131,11 @@ const options = {
     globalSymbolsServiceOptions: {
         symbolSet: "sclera",
         includeTypeInDisplayText: true
+    },
+    gridSortServiceOptions: {
+        lr: "lr",
+        tb: "tb",
+        rowThreshold: 64
     }
 };
 
@@ -154,6 +161,9 @@ Initializes the plugin and returns an instance of `IndependoMaps`.
   default [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)-based POI service.
 - `globalSymbolsServiceOptions`: Configuration for the default [Global Symbols API](https://globalsymbols.com/api/docs)
   -based pictogram service.
+- `gridSortServiceOptions`: Configuration for sorting markers into a 2D grid layout.
+- `markerSortingService`: A custom implementation of `MarkerSortingService`.
+- `debounceInterval`: Interval in milliseconds for debouncing map updates after events.
 
 ---
 
