@@ -174,5 +174,5 @@ This plugin is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgements
 
-This plugin was originally developed by [Independo GmbH](https://independo-gmbh.com) with financial support
+This plugin was originally developed by [Independo GmbH](https://www.independo.app) with financial support
 from [Netidee](https://www.netidee.at/independo-maps).
