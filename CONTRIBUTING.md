@@ -154,13 +154,5 @@ If you encounter any bugs, have feature requests, or need clarification, please 
 
 ---
 
-## Code of Conduct
-
-By contributing to this project, you agree to abide by
-the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/). Be respectful, inclusive, and
-professional in all interactions.
-
----
-
 Thank you for your contributions! Together, we can make `Leaflet.IndependoMaps` a fantastic tool for mapping points of
 interest as pictograms to make the digital world a bit more accessible for everyone.
