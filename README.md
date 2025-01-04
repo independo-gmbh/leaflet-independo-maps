@@ -8,16 +8,22 @@
 
 # Leaflet.IndependoMaps
 
-A [LeafletJS](http://leafletjs.com/) plugin for displaying points of interest as pictograms on a map.
+A [LeafletJS](http://leafletjs.com/) plugin for displaying points of interest (POIs) as pictograms on a map.
 
-This plugin enables users to overlay a custom layer of points of interest (POIs) onto a Leaflet map, displaying them as
-easily recognizable pictograms. It's designed to be lightweight, easy to use, and developer-friendly.
+This plugin enables developers to overlay a custom layer of POIs onto a Leaflet map, displaying them as easily
+recognizable pictograms sourced from external services like the Global Symbols API. It is designed to be lightweight,
+customizable, and developer-friendly.
+
+**Note**: The plugin currently supports only English.
 
 ---
 
 ## Features
 
-This Leaflet plugin displays points of interest as pictograms on a map.
+- **Customizable Layers**: Display POIs as pictograms on a map with options to customize the marker's design.
+- **Pluggable Architecture**: Use your own services for fetching POIs or pictograms via the provided service interfaces.
+- **Caching Mechanism**: Supports both in-memory and local-storage caching for enhanced performance.
+- **Accessibility**: Pictograms include ARIA labels for better accessibility.
 
 ---
 
@@ -27,12 +33,14 @@ This Leaflet plugin displays points of interest as pictograms on a map.
 
 To use this plugin, you need:
 
-- A working installation of [LeafletJS](http://leafletjs.com/).
-- A method to include the plugin (via npm or CDN).
+- A working installation of [LeafletJS](http://leafletjs.com/) (version 1.9.4 or higher recommended).
+- An API key for external services (optional, depending on your configuration).
 
 ### Installation
 
 #### **Via npm**
+
+You can install the plugin via npm:
 
 ```bash
 npm install @independo/leaflet-independo-maps
@@ -40,11 +48,114 @@ npm install @independo/leaflet-independo-maps
 
 #### **Via CDN**
 
+Alternatively, you can include the plugin directly in your HTML file using a CDN:
+
 ```html
+
 <script src="https://unpkg.com/@independo/leaflet-independo-maps@latest"></script>
 ```
 
-TODO: Expand here as the plugin is developed.
+---
+
+### Getting Started
+
+#### **Using npm**
+
+```typescript
+import {initIndependoMaps} from '@independo/leaflet-independo-maps';
+import L from 'leaflet';
+
+const map = L.map('map').setView([48.20849, 16.37208], 13);
+
+// Initialize the plugin
+const independoMaps = initIndependoMaps(map);
+```
+
+#### **Using CDN**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet IndependoMaps Plugin Test</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        #map {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<!-- Load Leaflet and IndependoMaps -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@independo/leaflet-independo-maps@latest"></script>
+
+<script>
+    const map = L.map('map').setView([48.20849, 16.37208], 15);
+    // Add a tile layer (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    LeafletIndependoMaps.initIndependoMaps(map);
+</script>
+</body>
+</html>
+```
+
+---
+
+#### Advanced Configuration
+
+You can customize the plugin by passing options to `initIndependoMaps`. For example:
+
+```typescript
+import {initIndependoMaps} from '@independo/leaflet-independo-maps';
+import L from 'leaflet';
+
+const map = L.map('map').setView([48.20849, 16.37208], 13);
+
+const options = {
+    overpassServiceOptions: {
+        apiUrl: "https://custom-overpass-api.com",
+        defaultLimit: 50,
+        defaultTypes: ["amenity", "shop", "tourism"]
+    },
+    globalSymbolsServiceOptions: {
+        symbolSet: "sclera",
+        includeTypeInDisplayText: true
+    }
+};
+
+const independoMaps = initIndependoMaps(map, options);
+```
+
+---
+
+### API Documentation
+
+#### `initIndependoMaps(map: L.Map, options?: IndependoMapsOptions): IndependoMaps`
+
+Initializes the plugin and returns an instance of `IndependoMaps`.
+
+- **`map`**: The Leaflet map to attach the plugin to.
+- **`options`** (optional): An `IndependoMapsOptions` object for configuring POI and pictogram services.
+
+#### `IndependoMapsOptions`
+
+- `poiService`: A custom implementation of `PointOfInterestService`.
+- `pictogramService`: A custom implementation of `PictogramService`.
+- `overpassServiceOptions`: Configuration for the
+  default [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)-based POI service.
+- `globalSymbolsServiceOptions`: Configuration for the default [Global Symbols API](https://globalsymbols.com/api/docs)
+  -based pictogram service.
+
+---
 
 ## Contributing
 
@@ -52,3 +163,16 @@ We welcome contributions to the Leaflet.IndependoMaps plugin! Whether you’re f
 documentation, we’re excited to collaborate with you.
 
 Please review our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+---
+
+## License
+
+This plugin is licensed under the [MIT License](LICENSE).
+
+---
+
+## Acknowledgements
+
+This plugin was originally developed by [Independo GmbH](https://independo-gmbh.com) with financial support
+from [Netidee](https://www.netidee.at/independo-maps).
