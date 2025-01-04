@@ -15,6 +15,8 @@ recognizable pictograms sourced from external services like
 the [Global Symbols API](https://globalsymbols.com/api/docs). It is designed to be lightweight, customizable, and
 developer-friendly.
 
+A demo of the plugin is available [here](https://independo-gmbh.github.io/leaflet-independo-maps/).
+
 ---
 
 ## Features
@@ -123,25 +125,25 @@ import L from 'leaflet';
 const map = L.map('map').setView([48.20849, 16.37208], 13);
 
 const options = {
-  overpassServiceOptions: {
-    apiUrl: "https://custom-overpass-api.com",
-    defaultLimit: 50,
-    defaultTypes: ["amenity", "shop", "tourism"]
-  },
-  globalSymbolsServiceOptions: {
-    symbolSet: "sclera",
-    includeTypeInDisplayText: true
-  },
-  gridSortServiceOptions: {
-    lr: "lr",
-    tb: "tb",
-    rowThreshold: 64
-  },
-  pictogramMarkerOptions: {
-    onClick: (pictogram, pointOfInterest) => {
-      console.log(pictogram, pointOfInterest);
+    overpassServiceOptions: {
+        apiUrl: "https://custom-overpass-api.com",
+        defaultLimit: 50,
+        defaultTypes: ["amenity", "shop", "tourism"]
+    },
+    globalSymbolsServiceOptions: {
+        symbolSet: "sclera",
+        includeTypeInDisplayText: true
+    },
+    gridSortServiceOptions: {
+        lr: "lr",
+        tb: "tb",
+        rowThreshold: 64
+    },
+    pictogramMarkerOptions: {
+        onClick: (pictogram, pointOfInterest) => {
+            console.log(pictogram, pointOfInterest);
+        }
     }
-  }
 };
 
 const independoMaps = initIndependoMaps(map, options);
@@ -155,21 +157,87 @@ const independoMaps = initIndependoMaps(map, options);
 
 Initializes the plugin and returns an instance of `IndependoMaps`.
 
-- **`map`**: The Leaflet map to attach the plugin to.
-- **`options`** (optional): An `IndependoMapsOptions` object for configuring POI and pictogram services.
+| Parameter  | Type                   | Description                                                               |
+|------------|------------------------|---------------------------------------------------------------------------|
+| `map`      | `L.Map`                | The Leaflet map to attach the plugin to.                                  |
+| `options?` | `IndependoMapsOptions` | Optional configuration object for customizing POI and pictogram services. |
+
+---
 
 #### `IndependoMapsOptions`
 
-- `poiService`: A custom implementation of `PointOfInterestService`.
-- `pictogramService`: A custom implementation of `PictogramService`.
-- `overpassServiceOptions`: Configuration for the
-  default [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API)-based POI service.
-- `pictogramMarkerOptions`: Configuration for the pictogram markers.
-- `globalSymbolsServiceOptions`: Configuration for the default [Global Symbols API](https://globalsymbols.com/api/docs)
-  -based pictogram service.
-- `gridSortServiceOptions`: Configuration for sorting markers into a 2D grid layout.
-- `markerSortingService`: A custom implementation of `MarkerSortingService`.
-- `debounceInterval`: Interval in milliseconds for debouncing map updates after events.
+Configuration options for the plugin.
+
+| Option                        | Type                                   | Description                                                                               |
+|-------------------------------|----------------------------------------|-------------------------------------------------------------------------------------------|
+| `poiService`                  | `PointOfInterestService`               | Custom implementation of `PointOfInterestService`. Defaults to `OverpassPOIService`.      |
+| `pictogramService`            | `PictogramService`                     | Custom implementation of `PictogramService`. Defaults to `GlobalSymbolsPictogramService`. |
+| `overpassServiceOptions`      | `OverpassPOIServiceOptions`            | Configuration for the default Overpass API-based POI service.                             |
+| `pictogramMarkerOptions`      | `PictogramMarkerOptions`               | Options for configuring the behavior and interactivity of pictogram markers.              |
+| `globalSymbolsServiceOptions` | `GlobalSymbolsPictogramServiceOptions` | Configuration for the default Global Symbols API-based pictogram service.                 |
+| `gridSortServiceOptions`      | `GridSortingServiceOptions`            | Configuration for sorting markers into a 2D grid layout.                                  |
+| `markerSortingService`        | `MarkerSortingService`                 | Custom implementation of `MarkerSortingService`. Defaults to `GridSortingService`.        |
+| `debounceInterval`            | `number`                               | Interval in milliseconds for debouncing map updates after events. Defaults to `300`.      |
+
+---
+
+#### `OverpassPOIServiceOptions`
+
+Configuration for the default Overpass API-based POI service.
+
+| Option            | Type       | Default                                     | Description                                                      |
+|-------------------|------------|---------------------------------------------|------------------------------------------------------------------|
+| `apiUrl`          | `string`   | `"https://overpass-api.de/api/interpreter"` | Base URL of the Overpass API endpoint.                           |
+| `defaultTypes`    | `string[]` | `["shop", "leisure"]`                       | Default POI types to query if none are provided.                 |
+| `osmTypes`        | `string[]` | `["node"]`                                  | OpenStreetMap types to query.                                    |
+| `defaultLimit`    | `number`   | `25`                                        | Default number of POIs to query if no limit is provided.         |
+| `maxRetries`      | `number`   | `3`                                         | Maximum number of retries for rate-limited or failed requests.   |
+| `retryDelay`      | `number`   | `1000`                                      | Timeout between retries in milliseconds.                         |
+| `timeout`         | `number`   | `25`                                        | Timeout for a single request in seconds.                         |
+| `deriveNames`     | `boolean`  | `true`                                      | Whether to derive names for POIs without a name from their type. |
+| `filterOutNoName` | `boolean`  | `true`                                      | Whether to filter out POIs without a name.                       |
+
+---
+
+#### `GlobalSymbolsPictogramServiceOptions`
+
+Configuration for the default Global Symbols API-based pictogram service.
+
+| Option                     | Type                             | Default                                               | Description                                                             |
+|----------------------------|----------------------------------|-------------------------------------------------------|-------------------------------------------------------------------------|
+| `apiUrl`                   | `string`                         | `"https://globalsymbols.com/api/v1/concepts/suggest"` | Base URL of the Global Symbols API endpoint.                            |
+| `symbolSet`                | `string`                         | `"arasaac"`                                           | Symbol set for fetching pictograms (e.g., `"sclera"`, `"blissymbols"`). |
+| `includeTypeInDisplayText` | `boolean`                        | `false`                                               | Whether to include the POI type in the display text of the pictogram.   |
+| `includeTypeInAriaLabel`   | `boolean`                        | `true`                                                | Whether to include the POI type in the ARIA label of the pictogram.     |
+| `cacheStrategy`            | `"in-memory" \| "local-storage"` | `"local-storage"`                                     | Cache strategy to use for storing pictograms.                           |
+| `cacheExpiration`          | `number`                         | `604800000`                                           | Cache expiration time in milliseconds (1 week).                         |
+| `cachePrefix`              | `string`                         | `"global-symbols-pictogram-service"`                  | Prefix for local-storage cache keys to avoid conflicts.                 |
+
+---
+
+#### `GridSortingServiceOptions`
+
+Configuration for sorting markers into a 2D grid layout.
+
+| Option         | Type           | Default | Description                                                                        |
+|----------------|----------------|---------|------------------------------------------------------------------------------------|
+| `lr`           | `"lr" \| "rl"` | `"lr"`  | Layout direction for the x-axis: `"lr"` (left-to-right) or `"rl"` (right-to-left). |
+| `tb`           | `"tb" \| "bt"` | `"tb"`  | Layout direction for the y-axis: `"tb"` (top-to-bottom) or `"bt"` (bottom-to-top). |
+| `rowThreshold` | `number`       | `64`    | Threshold in pixels to determine row separation.                                   |
+
+---
+
+#### `PictogramMarkerOptions`
+
+Options for configuring the behavior and interactivity of pictogram markers.
+
+| Option                | Type                                                    | Default     | Description                                                      |
+|-----------------------|---------------------------------------------------------|-------------|------------------------------------------------------------------|
+| `addAriaDescription`  | `boolean`                                               | `true`      | Whether to add an ARIA description to the pictogram marker.      |
+| `bringToFrontOnClick` | `boolean`                                               | `true`      | Whether to bring the marker to the front when clicked.           |
+| `bringToFrontOnHover` | `boolean`                                               | `true`      | Whether to bring the marker to the front when hovered.           |
+| `bringToFrontOnFocus` | `boolean`                                               | `true`      | Whether to bring the marker to the front when focused.           |
+| `onClick`             | `(pictogram: Pictogram, poi?: PointOfInterest) => void` | `undefined` | Callback function executed when the pictogram marker is clicked. |
 
 ---
 
