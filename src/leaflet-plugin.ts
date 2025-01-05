@@ -10,6 +10,7 @@ import {PointOfInterestService} from "./services/point-of-interest-service";
 import {PictogramService} from "./services/pictogram-service";
 import {MarkerSortingService} from "./services/marker-sorting-service";
 import {debounceAsync} from "./helpers/promise-helpers";
+import {Pictogram} from "./models/pictogram";
 
 /**
  * Options for configuring the Independo Maps plugin.
@@ -108,10 +109,20 @@ export interface IndependoMapsOptions {
 	 * @default 300
 	 */
 	debounceInterval?: number;
+
+	/**
+	 * The default pictogram to use when no pictogram is found for a POI.
+	 *
+	 * @remarks This pictogram will be used when the pictogram service returns `undefined` for a POI. If no pictogram
+	 * can be found for a POI and the default pictogram is not provided, the POI will not be displayed on the map.
+	 * @default undefined
+	 */
+	defaultPictogram?: Pictogram;
 }
 
 export class IndependoMaps {
 	private readonly debounceInterval: number;
+	private readonly defaultPictogram?: Pictogram;
 	private readonly map: L.Map;
 	private readonly poiLayerGroup: L.LayerGroup<PictogramMarker>;
 	private readonly poiService: PointOfInterestService;
@@ -121,6 +132,7 @@ export class IndependoMaps {
 
 	constructor(map: L.Map, options?: IndependoMapsOptions) {
 		this.debounceInterval = options?.debounceInterval || 300;
+		this.defaultPictogram = options?.defaultPictogram;
 		this.map = map;
 		this.poiLayerGroup = new L.LayerGroup<PictogramMarker>();
 
@@ -150,7 +162,7 @@ export class IndependoMaps {
 		const markerPromises = pointsOfInterest.map(async (poi) => {
 			const latlng = L.latLng(poi.latitude, poi.longitude);
 			const pictogram = await this.pictogramService.getPictogram(poi);
-			if (!pictogram) return undefined;
+			if (!pictogram) return this.defaultPictogram;
 			return pictogramMarker(latlng, pictogram, poi, this.pictogramMarkerOptions);
 		});
 

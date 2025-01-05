@@ -290,6 +290,7 @@ Configuration options for the plugin.
 | `gridSortServiceOptions`      | `GridSortingServiceOptions`            | Configuration for sorting markers into a 2D grid layout.                                  |
 | `markerSortingService`        | `MarkerSortingService`                 | Custom implementation of `MarkerSortingService`. Defaults to `GridSortingService`.        |
 | `debounceInterval`            | `number`                               | Interval in milliseconds for debouncing map updates after events. Defaults to `300`.      |
+| `defaultPictogram`            | `Pictogram`                            | Default pictogram to use if no pictogram is available for a POI.                          |
 
 #### `OverpassPOIServiceOptions`
 

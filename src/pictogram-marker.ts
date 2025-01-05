@@ -82,7 +82,7 @@ export class PictogramMarker extends L.Layer {
         // Create the black-bordered box
         const box = document.createElement("div");
         box.setAttribute("role", "group");
-        box.setAttribute("aria-label", `${this._pictogram.label || this._pictogram.displayText}`);
+        box.setAttribute("aria-label", `${this._pictogram.ariaLabel || this._pictogram.displayText}`);
         if (this.addAriaDescription && this._pictogram.description) {
             // add a hidden span with the description, generate a random id and add aria-describedby to the box
             const description = document.createElement("span");
@@ -117,18 +117,20 @@ export class PictogramMarker extends L.Layer {
         // Create the image element
         const img = document.createElement("img");
         img.src = this._pictogram.url;
-        img.alt = ""; // Empty alt attribute for decorative image
-        img.setAttribute("aria-hidden", "true"); // Ignore by assistive technologies
-        img.style.maxWidth = "100px"; // Adjust as needed
-        img.style.maxHeight = "100px"; // Adjust as needed
+        // Ignore by assistive technologies as the relevant information is in the box
+        img.alt = "";
+        img.setAttribute("aria-hidden", "true");
+        img.style.maxWidth = "100px";
+        img.style.maxHeight = "100px";
 
-        // Create the label
+        // Create the label for the display text
         const label = document.createElement("div");
         label.textContent = this._pictogram.displayText;
         label.style.fontSize = "12px";
         label.style.marginTop = "5px";
         label.style.textAlign = "center";
-        label.setAttribute("aria-hidden", "true"); // Ignore by assistive technologies
+        // Ignore by assistive technologies as the relevant information is in the box
+        label.setAttribute("aria-hidden", "true");
 
         // Add the image and label to the box
         box.appendChild(img);

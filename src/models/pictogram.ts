@@ -16,9 +16,9 @@ export interface Pictogram {
     displayText: string;
 
     /**
-     * Label for the pictogram.
+     * ARIA label for the pictogram.
      */
-    label?: string;
+    ariaLabel?: string;
 
     /**
      * Description of the pictogram.
