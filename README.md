@@ -17,8 +17,6 @@ developer-friendly.
 
 A demo of the plugin is available [here](https://independo-gmbh.github.io/leaflet-independo-maps/).
 
----
-
 ## Features
 
 - **Customizable Layers**: Display POIs as pictograms on a map with options to customize the marker's design.
@@ -58,8 +56,6 @@ Alternatively, you can include the plugin directly in your HTML file using a CDN
 
 <script src="https://unpkg.com/@independo/leaflet-independo-maps@latest"></script>
 ```
-
----
 
 ### Getting Started
 
@@ -112,11 +108,12 @@ const independoMaps = initIndependoMaps(map);
 </html>
 ```
 
----
-
 #### Advanced Configuration
 
-You can customize the plugin by passing options to `initIndependoMaps`. For example:
+You can customize the plugin by passing options to `initIndependoMaps`. For detailed configuration options, see the
+[API Documentation](#api-documentation).
+
+Here is an example of how to configure the plugin:
 
 ```typescript
 import {initIndependoMaps} from '@independo/leaflet-independo-maps';
@@ -149,6 +146,123 @@ const options = {
 const independoMaps = initIndependoMaps(map, options);
 ```
 
+### Building Custom Services
+
+The `Leaflet.IndependoMaps` plugin provides a pluggable architecture that allows you to customize the behavior of the
+plugin by implementing your own services. Below are minimal examples for implementing custom versions of
+`PointOfInterestService`, `PictogramService`, and `MarkerSortingService`.
+
+#### Custom `PointOfInterestService`
+
+The `PointOfInterestService` is responsible for fetching points of interest (POIs) within a specified geographic area.
+You could for example fetch POIs from
+the [Google Places API](https://developers.google.com/maps/documentation/places/web-service/overview), [Apple Maps Server API](https://developer.apple.com/documentation/applemapsserverapi/),
+you own backend, or any other service.
+
+To implement your own service, create a class that adheres to the `PointOfInterestService` interface.
+To use it with the plugin, pass an instance of your custom service to the plugin when initializing it
+(see [Using Custom Services](#using-custom-services)).
+
+```typescript
+import {PointOfInterest, PointOfInterestQueryOptions, PointOfInterestService} from '@independo/leaflet-independo-maps';
+import L from 'leaflet';
+
+class CustomPOIService implements PointOfInterestService {
+    async getPointsOfInterest(bounds: L.LatLngBounds, options?: PointOfInterestQueryOptions): Promise<PointOfInterest[]> {
+        // Example: Return a static list of POIs
+        return [
+            {
+                id: "1",
+                name: "Custom Cafe",
+                type: "restaurant",
+                latitude: bounds.getCenter().lat,
+                longitude: bounds.getCenter().lng,
+            },
+            {
+                id: "2",
+                name: "Custom Park",
+                type: "park",
+                latitude: bounds.getSouthWest().lat,
+                longitude: bounds.getSouthWest().lng,
+            },
+        ];
+    }
+}
+```
+
+#### Custom `PictogramService`
+
+The `PictogramService` is responsible for fetching pictograms for POIs. The plugin calls this service with a POI to
+retrieve a corresponding pictogram. It is not mandatory to provide a pictogram for each POI. If no pictogram is
+available, the plugin can be configured to either ignore the POI or display a default pictogram.
+
+To implement your own service, create a class that adheres to the `PictogramService` interface.
+To use it with the plugin, pass an instance of your custom service to the plugin when initializing it
+(see [Using Custom Services](#using-custom-services)).
+
+```typescript
+import {Pictogram, PointOfInterest, PictogramService} from '@independo/leaflet-independo-maps';
+
+class CustomPictogramService implements PictogramService {
+    async getPictogram(poi: PointOfInterest): Promise<Pictogram | undefined> {
+        // Example: Return a static pictogram for all POIs
+        return {
+            id: poi.id,
+            url: "https://example.com/static-pictogram.png",
+            displayText: poi.name,
+            label: `${poi.type}: ${poi.name}`,
+            description: `A pictogram for ${poi.name}`,
+        };
+    }
+}
+```
+
+#### Custom `MarkerSortingService`
+
+The `MarkerSortingService` is responsible for bringing the markers in a logical order before they are added to
+the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction). This is relevant for
+the accessibility of the map, as it ensures that screen readers and keyboard navigation tools can navigate the markers
+in a logical order. The default implementation sorts the markers into a 2D grid layout, but for some use cases, a
+different sorting algorithm might be more suitable (e.g., sorting by distance to the user's location).
+
+To implement your own service, create a class that adheres to the `MarkerSortingService` interface.
+To use it with the plugin, pass an instance of your custom service to the plugin when initializing it
+(see [Using Custom Services](#using-custom-services)).
+
+```typescript
+import {PictogramMarker, MarkerSortingService} from '@independo/leaflet-independo-maps';
+import L from 'leaflet';
+
+class CustomSortingService implements MarkerSortingService {
+    async sortMarkers(markers: PictogramMarker[], map: L.Map): Promise<PictogramMarker[]> {
+        // Example: Sort markers by latitude, ascending
+        return markers.sort((a, b) => a.getLatLng().lat - b.getLatLng().lat);
+    }
+}
+```
+
+#### Using Custom Services
+
+Once you have implemented your custom services, you can integrate them into the plugin by passing them as options when
+initializing the plugin:
+
+```typescript
+import {initIndependoMaps} from '@independo/leaflet-independo-maps';
+import L from 'leaflet';
+
+const map = L.map('map').setView([48.20849, 16.37208], 13);
+
+const options = {
+    poiService: new CustomPOIService(),
+    pictogramService: new CustomPictogramService(),
+    markerSortingService: new CustomSortingService(),
+};
+
+const independoMaps = initIndependoMaps(map, options);
+```
+
+This allows you to fully customize the behavior of the plugin to suit your specific requirements.
+
 ---
 
 ### API Documentation
@@ -161,8 +275,6 @@ Initializes the plugin and returns an instance of `IndependoMaps`.
 |------------|------------------------|---------------------------------------------------------------------------|
 | `map`      | `L.Map`                | The Leaflet map to attach the plugin to.                                  |
 | `options?` | `IndependoMapsOptions` | Optional configuration object for customizing POI and pictogram services. |
-
----
 
 #### `IndependoMapsOptions`
 
@@ -178,8 +290,6 @@ Configuration options for the plugin.
 | `gridSortServiceOptions`      | `GridSortingServiceOptions`            | Configuration for sorting markers into a 2D grid layout.                                  |
 | `markerSortingService`        | `MarkerSortingService`                 | Custom implementation of `MarkerSortingService`. Defaults to `GridSortingService`.        |
 | `debounceInterval`            | `number`                               | Interval in milliseconds for debouncing map updates after events. Defaults to `300`.      |
-
----
 
 #### `OverpassPOIServiceOptions`
 
@@ -197,8 +307,6 @@ Configuration for the default Overpass API-based POI service.
 | `deriveNames`     | `boolean`  | `true`                                      | Whether to derive names for POIs without a name from their type. |
 | `filterOutNoName` | `boolean`  | `true`                                      | Whether to filter out POIs without a name.                       |
 
----
-
 #### `GlobalSymbolsPictogramServiceOptions`
 
 Configuration for the default Global Symbols API-based pictogram service.
@@ -213,8 +321,6 @@ Configuration for the default Global Symbols API-based pictogram service.
 | `cacheExpiration`          | `number`                         | `604800000`                                           | Cache expiration time in milliseconds (1 week).                         |
 | `cachePrefix`              | `string`                         | `"global-symbols-pictogram-service"`                  | Prefix for local-storage cache keys to avoid conflicts.                 |
 
----
-
 #### `GridSortingServiceOptions`
 
 Configuration for sorting markers into a 2D grid layout.
@@ -224,8 +330,6 @@ Configuration for sorting markers into a 2D grid layout.
 | `lr`           | `"lr" \| "rl"` | `"lr"`  | Layout direction for the x-axis: `"lr"` (left-to-right) or `"rl"` (right-to-left). |
 | `tb`           | `"tb" \| "bt"` | `"tb"`  | Layout direction for the y-axis: `"tb"` (top-to-bottom) or `"bt"` (bottom-to-top). |
 | `rowThreshold` | `number`       | `64`    | Threshold in pixels to determine row separation.                                   |
-
----
 
 #### `PictogramMarkerOptions`
 
@@ -248,13 +352,9 @@ documentation, we’re excited to collaborate with you.
 
 Please review our [Contributing Guidelines](CONTRIBUTING.md) to get started.
 
----
-
 ## License
 
 This plugin is licensed under the [MIT License](LICENSE).
-
----
 
 ## Acknowledgements
 
