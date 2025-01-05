@@ -19,13 +19,17 @@ A demo of the plugin is available [here](https://independo-gmbh.github.io/leafle
 
 ## Features
 
-- **Customizable Layers**: Display POIs as pictograms on a map with options to customize the marker's design.
-- **Pluggable Architecture**: Use your own services for fetching POIs or pictograms via the provided service interfaces.
-- **Caching Mechanism**: Supports both in-memory and local-storage caching for enhanced performance.
-- **Accessibility**: Pictograms include ARIA labels and descriptions if provided by the pictogram source. *Note*: The
-  default implementations in the plugin currently support only English for the ARIA labels and descriptions.
-- **Logical Ordering**: Markers are added to the DOM in a customizable, logical order to improve accessibility for
-  screen readers and keyboard navigation.
+- **[Customizable Styling](#customizing-marker-styles)**: Display POIs as pictograms on a map with options to customize
+  the marker's design.
+- **[Pluggable Architecture](#customizing-core-services)**: Use your own services for fetching POIs or pictograms via
+  the provided service interfaces.
+- **[Caching Mechanism](#globalsymbolspictogramserviceoptions)**: Supports both in-memory and local-storage caching for
+  enhanced performance.
+- **[Accessibility](#globalsymbolspictogramserviceoptions)**: Pictograms include ARIA labels and descriptions if
+  provided by the pictogram source. *Note*: The default implementations in the plugin currently support only English for
+  the labels and descriptions.
+- **[Logical Ordering](#custom-markersortingservice)**: Markers are added to the DOM in a customizable, logical order to
+  improve accessibility for screen readers and keyboard navigation.
 
 ---
 
@@ -54,12 +58,21 @@ Alternatively, you can include the plugin directly in your HTML file using a CDN
 
 ```html
 
-<script src="https://unpkg.com/@independo/leaflet-independo-maps@latest"></script>
+<link rel="stylesheet" href="https://unpkg.com/@independo/leaflet-independo-maps/dist/leaflet-independo-maps.min.css"/>
+<script src="https://unpkg.com/@independo/leaflet-independo-maps/dist/leaflet-independo-maps.min.js"></script>
 ```
 
 ### Getting Started
 
 #### **Using npm**
+
+To use the plugin in your project install it via npm:
+
+```bash
+npm install @independo/leaflet-independo-maps
+```
+
+Then import it and initialize it with a Leaflet map instance:
 
 ```typescript
 import {initIndependoMaps} from '@independo/leaflet-independo-maps';
@@ -71,6 +84,12 @@ const map = L.map('map').setView([48.20849, 16.37208], 13);
 const independoMaps = initIndependoMaps(map);
 ```
 
+Additionally, you need to include the CSS file in your project styles:
+
+```css
+@import './node_modules/@independo/leaflet-independo-maps/dist/leaflet-independo-maps.css';
+```
+
 #### **Using CDN**
 
 ```html
@@ -80,8 +99,11 @@ const independoMaps = initIndependoMaps(map);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaflet IndependoMaps Plugin Test</title>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <!-- Load CSS for Leaflet and IndependoMaps -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet"
+          href="https://unpkg.com/@independo/leaflet-independo-maps/dist/leaflet-independo-maps.min.css"/>
     <style>
         #map {
             height: 100vh;
@@ -91,9 +113,9 @@ const independoMaps = initIndependoMaps(map);
 <body>
 <div id="map"></div>
 
-<!-- Load Leaflet and IndependoMaps -->
+<!-- Load Leaflet and IndependoMaps JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/@independo/leaflet-independo-maps@latest"></script>
+<script src="https://unpkg.com/@independo/leaflet-independo-maps"></script>
 
 <script>
     const map = L.map('map').setView([48.20849, 16.37208], 15);
@@ -146,7 +168,83 @@ const options = {
 const independoMaps = initIndependoMaps(map, options);
 ```
 
-### Building Custom Services
+### Customizing Marker Styles
+
+The appearance of `PictogramMarker` instances can be customized using CSS. Each marker is constructed with a specific
+DOM structure and CSS classes that allow developers to apply custom styles.
+
+#### DOM Structure
+
+A `PictogramMarker` is structured as follows:
+
+```html
+
+<div class="pictogram-marker-container">
+    <div class="pictogram-marker-box">
+        <div class="pictogram-marker-img-wrapper">
+            <img src="pictogram-url.png"/>
+        </div>
+        <div class="pictogram-marker-label">Label Text</div>
+        <div class="pictogram-marker-description">Description Text</div>
+    </div>
+    <div class="pictogram-marker-pointer"></div>
+</div>
+```
+
+#### Default CSS Classes
+
+Below is a description of the default CSS classes used by `PictogramMarker`:
+
+| Class                          | Description                                                                                                                                                               |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `pictogram-marker-container`   | Root container that aligns the marker.                                                                                                                                    |
+| `pictogram-marker-box`         | Wrapper for the marker content, including the image, label, and description.                                                                                              |
+| `pictogram-marker-img-wrapper` | Wrapper for the pictogram image, allowing flexible styling.                                                                                                               |
+| `pictogram-marker-label`       | Label displaying the `displayText` property of the pictogram.                                                                                                             |
+| `pictogram-marker-description` | Optional description for the pictogram displaying the `description` property of a pictogram. Only added if `addDescription` in `PictogramMarkerOptions` is set to `true`. |
+| `pictogram-marker-pointer`     | CSS triangle pointing to the marker's geographical position.                                                                                                              |
+
+#### Customization Examples
+
+You can customize the styles by overriding the default classes in your CSS file.
+
+##### Example 1: Change Background and Border
+
+```css
+.pictogram-marker-box {
+    background-color: #f0f0f0;
+    border: 2px solid #ff9900;
+    border-radius: 10px;
+}
+```
+
+##### Example 2: Add Hover Effects
+
+```css
+.pictogram-marker-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+```
+
+##### Example 3: Resize the Pictogram Image
+
+```css
+.pictogram-marker-img-wrapper img {
+    max-width: 80px;
+    max-height: 80px;
+}
+```
+
+##### Example 4: Adjust the Pointer
+
+```css
+.pictogram-marker-pointer {
+    border-top: 10px solid #0078d7; /* Change the pointer color */
+}
+```
+
+### Customizing Core Services
 
 The `Leaflet.IndependoMaps` plugin provides a pluggable architecture that allows you to customize the behavior of the
 plugin by implementing your own services. Below are minimal examples for implementing custom versions of
@@ -336,13 +434,13 @@ Configuration for sorting markers into a 2D grid layout.
 
 Options for configuring the behavior and interactivity of pictogram markers.
 
-| Option                | Type                                                    | Default     | Description                                                      |
-|-----------------------|---------------------------------------------------------|-------------|------------------------------------------------------------------|
-| `addAriaDescription`  | `boolean`                                               | `true`      | Whether to add an ARIA description to the pictogram marker.      |
-| `bringToFrontOnClick` | `boolean`                                               | `true`      | Whether to bring the marker to the front when clicked.           |
-| `bringToFrontOnHover` | `boolean`                                               | `true`      | Whether to bring the marker to the front when hovered.           |
-| `bringToFrontOnFocus` | `boolean`                                               | `true`      | Whether to bring the marker to the front when focused.           |
-| `onClick`             | `(pictogram: Pictogram, poi?: PointOfInterest) => void` | `undefined` | Callback function executed when the pictogram marker is clicked. |
+| Option                | Type                                                    | Default     | Description                                                                                          |
+|-----------------------|---------------------------------------------------------|-------------|------------------------------------------------------------------------------------------------------|
+| `addDescription`      | `boolean`                                               | `false`     | Whether to add the pictogram description to the pictogram marker in case a description is available. |
+| `bringToFrontOnClick` | `boolean`                                               | `true`      | Whether to bring the marker to the front when clicked.                                               |
+| `bringToFrontOnHover` | `boolean`                                               | `true`      | Whether to bring the marker to the front when hovered.                                               |
+| `bringToFrontOnFocus` | `boolean`                                               | `true`      | Whether to bring the marker to the front when focused.                                               |
+| `onClick`             | `(pictogram: Pictogram, poi?: PointOfInterest) => void` | `undefined` | Callback function executed when the pictogram marker is clicked.                                     |
 
 ---
 

@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaflet Independo Maps Demo</title>
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <!-- Load CSS for Leaflet and IndependoMaps -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet"
+          href="https://unpkg.com/@independo/leaflet-independo-maps/dist/leaflet-independo-maps.min.css"/>
     <style>
         #map {
             height: 100%;
@@ -15,6 +18,12 @@
             margin: 0;
             padding: 0;
             height: 100dvh;
+        }
+
+        /* Add custom CSS for the pictogram markers */
+        .pictogram-marker-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
