@@ -1,6 +1,6 @@
 {
 	"name": "@independo/leaflet-independo-maps",
-	"version": "1.0.1",
+	"version": "1.1.0-dev.2",
 	"description": "Leaflet plugin for displaying points of interest as pictograms.",
 	"keywords": [
 		"leaflet",
@@ -58,14 +58,15 @@
 		"@rollup/plugin-node-resolve": "^16.0.0",
 		"@rollup/plugin-terser": "^0.4.4",
 		"@rollup/plugin-typescript": "^12.1.2",
-		"rollup-plugin-dts": "^6.1.1",
 		"@saithodev/semantic-release-backmerge": "^4.0.1",
 		"@semantic-release/changelog": "^6.0.3",
-		"conventional-changelog-conventionalcommits": "^8.0.0",
 		"@semantic-release/git": "^10.0.1",
 		"@types/leaflet": "^1.9.15",
+		"conventional-changelog-conventionalcommits": "^8.0.0",
 		"eslint": "^9.17.0",
 		"rollup": "^4.29.1",
+		"rollup-plugin-dts": "^6.1.1",
+		"rollup-plugin-postcss": "^4.0.2",
 		"semantic-release": "^24.2.1",
 		"tslib": "^2.8.1",
 		"typescript": "^5.7.2"

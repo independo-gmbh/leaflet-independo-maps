@@ -3,6 +3,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import {dts} from "rollup-plugin-dts";
+import postcss from 'rollup-plugin-postcss';
 
 export default [
     {
@@ -40,14 +41,20 @@ export default [
             resolve(),          // Resolve node_modules imports
             commonjs(),         // Convert CommonJS modules to ES modules
             typescript(),       // Transpile TypeScript
+            postcss({
+                extract: 'leaflet-independo-maps.min.css',
+                minimize: true,
+                sourceMap: true,
+            })
         ],
     },
     {
         input: 'dist/types/index.d.ts',
         output: {
             file: 'dist/index.d.ts',
-            format: 'esm',
+            format: 'esm'
         },
+        external: [/\.css$/],
         plugins: [dts()],
     }
 ];

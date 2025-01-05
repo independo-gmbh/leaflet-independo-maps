@@ -4,11 +4,11 @@ import {PointOfInterest} from "./models/point-of-interest";
 
 export interface PictogramMarkerOptions {
     /**
-     * Whether to add an aria description to the pictogram marker.
+     * Whether to add the pictogram description to the pictogram marker in case a description is available.
      *
-     * @default true
+     * @default false
      */
-    addAriaDescription?: boolean;
+    addDescription?: boolean;
 
     /**
      * Whether to bring the pictogram marker to the front when clicked.
@@ -40,10 +40,13 @@ export interface PictogramMarkerOptions {
 }
 
 /**
- * A custom Leaflet layer that displays a pictogram at a given latlng.
+ * A custom Leaflet layer that displays a pictogram marker at a specified geographical location.
+ *
+ * This marker supports accessibility features, customizable interactions, and flexible styling.
+ * It is designed to be used with the Leaflet library and integrates easily into any Leaflet map.
  */
 export class PictogramMarker extends L.Layer {
-    private readonly addAriaDescription: boolean;
+    private readonly addDescription: boolean;
     private readonly bringToFrontOnClick: boolean;
     private readonly bringToFrontOnHover: boolean;
     private readonly bringToFrontOnFocus: boolean;
@@ -54,18 +57,52 @@ export class PictogramMarker extends L.Layer {
     private readonly _pointOfInterest: PointOfInterest | undefined;
 
     private container?: HTMLDivElement;
+    private box?: HTMLDivElement;
     private map: Map | null = null;
 
     getLatLng(): L.LatLng {
         return this._latlng;
     }
 
-    constructor(latlng: LatLngExpression, pictogram: Pictogram, pointOfInterest?: PointOfInterest, options?: PictogramMarkerOptions) {
+    /**
+     * Constructs a new instance of the `PictogramMarker` class.
+     *
+     * @param latlng - The geographical coordinates where the marker should be placed.
+     * @param pictogram - The pictogram object containing the display data (e.g., URL, label, description).
+     * @param pointOfInterest - (Optional) The associated point of interest for this marker.
+     * @param options - (Optional) Configuration options for the marker's behavior and interactivity.
+     *
+     * @example
+     * ```typescript
+     * const latlng = L.latLng(48.20849, 16.37208);
+     * const pictogram = {
+     *     id: '1',
+     *     url: 'https://example.com/pictogram.png',
+     *     displayText: 'Restaurant',
+     *     description: 'A fine dining restaurant serving local cuisine.'
+     * };
+     *
+     * const options = {
+     *     addDescription: true,
+     *     bringToFrontOnClick: true,
+     *     onClick: (pictogram) => {
+     *         console.log('Pictogram clicked:', pictogram);
+     *     }
+     * };
+     *
+     * const marker = new PictogramMarker(latlng, pictogram, undefined, options);
+     * marker.addTo(map);
+     * ```
+     */
+    constructor(latlng: LatLngExpression,
+                pictogram: Pictogram,
+                pointOfInterest?: PointOfInterest,
+                options?: PictogramMarkerOptions) {
         super();
         this._latlng = L.latLng(latlng);
         this._pictogram = pictogram;
         this._pointOfInterest = pointOfInterest;
-        this.addAriaDescription = options?.addAriaDescription ?? true;
+        this.addDescription = options?.addDescription ?? false;
         this.bringToFrontOnClick = options?.bringToFrontOnClick ?? true;
         this.bringToFrontOnHover = options?.bringToFrontOnHover ?? true;
         this.bringToFrontOnFocus = options?.bringToFrontOnFocus ?? true;
@@ -75,80 +112,41 @@ export class PictogramMarker extends L.Layer {
     onAdd(map: Map): this {
         this.map = map;
 
-        // Create the container div
-        this.container = L.DomUtil.create("div", "pictogram-wrapper") as HTMLDivElement;
+        this.container = L.DomUtil.create("div", "pictogram-marker-container") as HTMLDivElement;
         this.container.style.position = "absolute";
+        this.container.style.transform = "translate(-50%, -100%)";
 
-        // Create the black-bordered box
-        const box = document.createElement("div");
-        box.setAttribute("role", "group");
-        box.setAttribute("aria-label", `${this._pictogram.label || this._pictogram.displayText}`);
-        if (this.addAriaDescription && this._pictogram.description) {
-            // add a hidden span with the description, generate a random id and add aria-describedby to the box
-            const description = document.createElement("span");
-            description.textContent = this._pictogram.description;
-            description.style.display = "none";
-            const id = Math.random().toString(36).substring(7);
-            description.id = id;
-            box.setAttribute("aria-describedby", id);
-            this.container.appendChild(description);
-        }
-        box.setAttribute("tabindex", "0");
-        box.style.display = "flex";
-        box.style.flexDirection = "column";
-        box.style.alignItems = "center";
-        box.style.justifyContent = "center";
-        box.style.padding = "10px"; // Add padding around the content
-        box.style.border = "3px solid black"; // Black border
-        box.style.borderRadius = "5px"; // Rounded corners
-        box.style.background = "white"; // White background
-        box.style.boxShadow = "0 2px 4px rgba(0,0,0,0.5)"; // Add shadow for depth
-        if (this.onClick) {
-            box.style.cursor = "pointer";
-            box.setAttribute("role", "button");
-            box.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") {
-                    this.onClick?.(this._pictogram, this._pointOfInterest);
-                }
-            });
-            box.addEventListener("click", () => this.onClick?.(this._pictogram, this._pointOfInterest));
-        }
+        this.box = L.DomUtil.create("div", "pictogram-marker-box", this.container);
 
-        // Create the image element
+        const imgWrapper = L.DomUtil.create("div", "pictogram-marker-img-wrapper", this.box);
         const img = document.createElement("img");
         img.src = this._pictogram.url;
-        img.alt = ""; // Empty alt attribute for decorative image
-        img.setAttribute("aria-hidden", "true"); // Ignore by assistive technologies
-        img.style.maxWidth = "100px"; // Adjust as needed
-        img.style.maxHeight = "100px"; // Adjust as needed
+        // Accessible description is in the parent container
+        img.alt = "";
+        img.setAttribute("aria-hidden", "true");
+        img.setAttribute("role", "presentation");
+        imgWrapper.appendChild(img);
 
-        // Create the label
-        const label = document.createElement("div");
+        const label = L.DomUtil.create("div", "pictogram-marker-label", this.box);
         label.textContent = this._pictogram.displayText;
-        label.style.fontSize = "12px";
-        label.style.marginTop = "5px";
-        label.style.textAlign = "center";
-        label.setAttribute("aria-hidden", "true"); // Ignore by assistive technologies
 
-        // Add the image and label to the box
-        box.appendChild(img);
-        box.appendChild(label);
+        if (this.addDescription && this._pictogram.description) {
+            const description = L.DomUtil.create("div", "pictogram-marker-description", this.box);
+            description.textContent = this._pictogram.description;
+            const id = `pmd-${Math.random().toString(36).substring(7)}`;
+            description.id = id;
+            this.box.setAttribute("aria-describedby", id);
+            description.setAttribute("aria-hidden", "true");
+        }
 
-        // Create the pointy border (CSS triangle)
-        const pointer = document.createElement("div");
-        pointer.style.position = "absolute";
-        pointer.style.width = "0";
-        pointer.style.height = "0";
-        pointer.style.borderLeft = "10px solid transparent";
-        pointer.style.borderRight = "10px solid transparent";
-        pointer.style.borderTop = "10px solid black";
-        pointer.style.top = "100%"; // Place the pointer below the box
-        pointer.style.left = "50%";
-        pointer.style.transform = "translateX(-50%)";
+        const pointer = L.DomUtil.create("div", "pictogram-marker-pointer", this.container);
 
-        // Wrap the box and pointer
-        this.container.appendChild(box);
-        this.container.appendChild(pointer);
+        // Add event listeners
+        if (this.onClick) {
+            this.box.addEventListener("click", () => this.onClick?.(this._pictogram, this._pointOfInterest));
+            this.box.setAttribute("role", "button");
+            this.box.tabIndex = 0;
+        }
 
         // Add the container to the map's overlay pane
         map.getPanes().overlayPane.appendChild(this.container);
@@ -157,24 +155,7 @@ export class PictogramMarker extends L.Layer {
         this.updatePosition();
         map.on("zoomend moveend", this.updatePosition, this);
 
-        if (this.bringToFrontOnClick) {
-            this.container.addEventListener("click", () => this.toggleInFront(this.container));
-            this.container.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") {
-                    this.toggleInFront(this.container);
-                }
-            });
-        }
-
-        if (this.bringToFrontOnHover) {
-            this.container.addEventListener("mouseenter", () => this.toggleInFront(this.container));
-            this.container.addEventListener("mouseleave", () => this.toggleInFront(this.container));
-        }
-
-        if (this.bringToFrontOnFocus) {
-            box.addEventListener("focus", () => this.toggleInFront(this.container));
-            box.addEventListener("blur", () => this.toggleInFront(this.container));
-        }
+        this.setupInteractions();
 
         return this;
     }
@@ -190,24 +171,52 @@ export class PictogramMarker extends L.Layer {
 
     private updatePosition(): void {
         if (!this.map || !this.container) return;
-
-        // Convert latlng to pixel coordinates
         const position = this.map.latLngToLayerPoint(this._latlng);
-        const containerWidth = this.container.offsetWidth;
-        const containerHeight = this.container.offsetHeight;
-
-        // Position the container so that the pointer's tip points to the latlng
-        this.container.style.left = `${position.x - containerWidth / 2}px`;
-        this.container.style.top = `${position.y - containerHeight}px`;
+        this.container.style.left = `${position.x}px`;
+        this.container.style.top = `${position.y}px`;
     }
 
-    private toggleInFront(box: HTMLDivElement | undefined): void {
-        if (box) {
-            if (box.style.zIndex === "1000") {
-                box.style.zIndex = "auto";
-            } else {
-                box.style.zIndex = "1000";
-            }
+    private setupInteractions(): void {
+        if (!this.container) return;
+        if (!this.box) return;
+
+        const container = this.container;
+        const box = this.box;
+
+        if (this.bringToFrontOnClick) {
+            container.addEventListener("click", () => this.toggleInFront(container));
+            container.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    this.toggleInFront(container);
+                }
+            });
+        }
+
+        if (this.bringToFrontOnHover) {
+            container.addEventListener("mouseenter", () => this.toggleInFront(container));
+            container.addEventListener("mouseleave", () => this.toggleInFront(container));
+        }
+
+        if (this.bringToFrontOnFocus) {
+            box.addEventListener("focus", () => this.toggleInFront(container));
+            box.addEventListener("blur", () => this.toggleInFront(container));
+        }
+
+        if (this.onClick) {
+            container.addEventListener("click", () => this.onClick?.(this._pictogram, this._pointOfInterest));
+            container.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    this.onClick?.(this._pictogram, this._pointOfInterest);
+                }
+            });
+        }
+    }
+
+    private toggleInFront(container: HTMLDivElement): void {
+        if (container.style.zIndex === "1000") {
+            container.style.zIndex = "auto";
+        } else {
+            container.style.zIndex = "1000";
         }
     }
 }

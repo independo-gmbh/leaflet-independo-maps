@@ -17,10 +17,16 @@
 		// Skip type-checking of libraries
 		"skipLibCheck": true,
 		// Add "dom" for AMD globals like `define`
-		"lib": ["dom", "es2017"]
+		"lib": [
+			"dom",
+			"es2017"
+		]
 	},
 	// Include all TypeScript files in `src` directory
 	"include": [
-		"src/**/*"
+		"src/**/*.ts"
+	],
+	"exclude": [
+		"src/**/*.css"
 	]
 }
