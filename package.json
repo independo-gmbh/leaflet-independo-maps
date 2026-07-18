@@ -24,6 +24,10 @@
 	"license": "MIT",
 	"author": "Independo GmbH",
 	"type": "module",
+	"packageManager": "pnpm@11.13.1",
+	"engines": {
+		"node": ">=24"
+	},
 	"main": "dist/leaflet-independo-maps.min.js",
 	"module": "dist/leaflet-independo-maps.esm.js",
 	"types": "dist/index.d.ts",
@@ -47,11 +51,11 @@
 	},
 	"scripts": {
 		"clean": "rm -rf dist/",
-		"build": "npm run clean && rollup -c",
+		"build": "pnpm clean && rollup -c",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch": "rollup -c -w",
-		"start": "npm run watch",
-		"prepublishOnly": "npm run build"
+		"start": "pnpm watch",
+		"prepublishOnly": "pnpm build"
 	},
 	"devDependencies": {
 		"@rollup/plugin-commonjs": "^28.0.2",
