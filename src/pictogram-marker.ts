@@ -139,7 +139,8 @@ export class PictogramMarker extends L.Layer {
             description.setAttribute("aria-hidden", "true");
         }
 
-        const pointer = L.DomUtil.create("div", "pictogram-marker-pointer", this.container);
+        // Creating the element appends it to `this.container` as a side effect.
+        L.DomUtil.create("div", "pictogram-marker-pointer", this.container);
 
         // Add event listeners
         if (this.onClick) {
