@@ -1,6 +1,7 @@
 import type L from "leaflet";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {IndependoMaps, initIndependoMaps} from "../src/leaflet-plugin";
+import {PictogramMarker} from "../src/pictogram-marker";
 import type {PointOfInterest} from "../src/models/point-of-interest";
 import type {Pictogram} from "../src/models/pictogram";
 
@@ -35,12 +36,7 @@ describe("initIndependoMaps / IndependoMaps", () => {
 		await vi.waitFor(() => expect(poiService.getPointsOfInterest).toHaveBeenCalled());
 	});
 
-	// Characterization test for a KNOWN latent bug (see plan open item):
-	// when the pictogram service returns undefined, updateMap returns the raw
-	// `defaultPictogram` (a Pictogram) where a PictogramMarker is expected, so a
-	// non-marker leaks into the sorting/layer pipeline. This documents current
-	// behavior; it should be fixed in a separate `fix:` commit if approved.
-	it("[bug] leaks the raw defaultPictogram into the marker pipeline when no pictogram is found", async () => {
+	it("builds a marker from defaultPictogram when no pictogram is found for a POI", async () => {
 		const captured: unknown[] = [];
 		const sortMarkers = vi.fn(async (markers: unknown[]) => {
 			captured.push(...markers);
@@ -56,6 +52,29 @@ describe("initIndependoMaps / IndependoMaps", () => {
 		} as unknown as never);
 
 		await vi.waitFor(() => expect(sortMarkers).toHaveBeenCalled());
-		expect(captured).toContain(defaultPictogram);
+		// A real marker is produced at the POI location, not the raw Pictogram object.
+		expect(captured).toHaveLength(1);
+		expect(captured[0]).toBeInstanceOf(PictogramMarker);
+		expect(captured).not.toContain(defaultPictogram);
+		const marker = captured[0] as PictogramMarker;
+		expect(marker.getLatLng().lat).toBeCloseTo(poi.latitude);
+		expect(marker.getLatLng().lng).toBeCloseTo(poi.longitude);
+	});
+
+	it("skips the POI when no pictogram is found and no defaultPictogram is configured", async () => {
+		const captured: unknown[] = [];
+		const sortMarkers = vi.fn(async (markers: unknown[]) => {
+			captured.push(...markers);
+			return [] as never;
+		});
+
+		new IndependoMaps(fakeMap(), {
+			poiService: {getPointsOfInterest: async () => [poi]},
+			pictogramService: {getPictogram: async () => undefined},
+			markerSortingService: {sortMarkers},
+		} as unknown as never);
+
+		await vi.waitFor(() => expect(sortMarkers).toHaveBeenCalled());
+		expect(captured).toHaveLength(0);
 	});
 });
