@@ -137,4 +137,7 @@ fabric.properties
 dist
 node_modules
 
+# OS junk
+.DS_Store
+
 # End of https://www.toptal.com/developers/gitignore/api/webstorm,visualstudiocode
