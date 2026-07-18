@@ -113,7 +113,8 @@ export class OverpassPOIService implements PointOfInterestService {
 
     /** @inheritDoc */
     public async getPointsOfInterest(bounds: LatLngBounds, options?: PointOfInterestQueryOptions): Promise<PointOfInterest[]> {
-        let {types = undefined, limit = this.defaultLimit} = options || {};
+        const limit = options?.limit ?? this.defaultLimit;
+        let types = options?.types;
 
         if (types?.length === 0) {
             return [];

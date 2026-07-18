@@ -31,15 +31,15 @@ started and ensure a smooth collaboration.
    ```
 
 3. **Install Dependencies**
-   Install the necessary dependencies using `npm`:
+   This project uses [pnpm](https://pnpm.io/). Install the necessary dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 4. **Run `rollup` in Watch Mode**
    Start the development server and watch for changes:
    ```bash
-   npm run watch
+   pnpm watch
    ```
 
 5. **Start a Local Server**
@@ -64,7 +64,10 @@ started and ensure a smooth collaboration.
 
 3. **Test Your Changes**
    Ensure your changes work as expected and do not break existing functionality. Use the example HTML file or write new
-   tests for your changes.
+   tests for your changes, and run the full check suite:
+   ```bash
+   pnpm lint && pnpm typecheck && pnpm test && pnpm build
+   ```
 
 4. **Commit Your Changes**
    Follow the [Conventional Commits](#commit-messages) format for your commit messages.

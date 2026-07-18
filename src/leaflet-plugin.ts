@@ -162,7 +162,12 @@ export class IndependoMaps {
 		const markerPromises = pointsOfInterest.map(async (poi) => {
 			const latlng = L.latLng(poi.latitude, poi.longitude);
 			const pictogram = await this.pictogramService.getPictogram(poi);
-			if (!pictogram) return this.defaultPictogram;
+			if (!pictogram) {
+				// Fall back to the default pictogram if one is configured, otherwise
+				// skip the POI (it will be filtered out below).
+				if (!this.defaultPictogram) return undefined;
+				return pictogramMarker(latlng, this.defaultPictogram, poi, this.pictogramMarkerOptions);
+			}
 			return pictogramMarker(latlng, pictogram, poi, this.pictogramMarkerOptions);
 		});
 

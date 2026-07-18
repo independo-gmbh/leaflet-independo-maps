@@ -14,20 +14,17 @@ jobs:
     timeout-minutes: 30
     name: "Build Plugin"
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
-      - uses: actions/checkout@v4
-      - name: Restore Dependency Cache
-        id: cache-modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            */node_modules
-          key: ${{ runner.os }}-dependency-caching-${{ hashFiles('package.json', '*/package.json') }}
-      - run: npm ci
-      - run: npm run build
+          node-version: 24
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
 
   publish:
     runs-on: ubuntu-latest
@@ -35,28 +32,25 @@ jobs:
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
       pull-requests: write # to be able to comment on released pull requests
-      id-token: write # to enable use of OIDC for npm provenance
+      id-token: write # to enable npm trusted publishing (OIDC) and provenance
     timeout-minutes: 30
     name: "Publish Plugin"
     needs:
       - build
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
-      - uses: actions/checkout@v4
-      - name: Restore Dependency Cache
-        id: cache-modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            */node_modules
-          key: ${{ runner.os }}-dependency-caching-${{ hashFiles('package.json', '*/package.json') }}
-      - run: npm ci
-      - run: npm run prepublishOnly
+          node-version: 24
+          cache: 'pnpm'
+      # npm trusted publishing (OIDC) requires the npm CLI >= 11.5.1. Node 24
+      # ships a recent npm, but pin the floor explicitly so publishing never
+      # silently falls back to an unauthenticated state.
+      - run: npm install -g npm@^11
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
       - name: 'Semantic Release'
-        run: npx semantic-release
+        run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
