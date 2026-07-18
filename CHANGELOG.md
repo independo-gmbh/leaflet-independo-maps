@@ -1,3 +1,10 @@
+## [1.1.10-dev.3](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.10-dev.2...v1.1.10-dev.3) (2026-07-18)
+
+### Miscellaneous Chores 🛠️
+
+* **deps-dev:** bump eslint from 9.31.0 to 10.7.0 ([69fbf1f](https://github.com/independo-gmbh/leaflet-independo-maps/commit/69fbf1f81cfa65605664bbf0bbc0ae1342b3bc56))
+* **deps-dev:** bump rollup-plugin-dts from 6.2.1 to 6.4.1 ([ac4fd62](https://github.com/independo-gmbh/leaflet-independo-maps/commit/ac4fd629beea52c428485792c4fc77b1fe7a9ae9))
+
 ## [1.1.10-dev.2](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.10-dev.1...v1.1.10-dev.2) (2026-07-18)
 
 ### Miscellaneous Chores 🛠️
