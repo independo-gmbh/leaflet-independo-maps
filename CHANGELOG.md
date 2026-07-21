@@ -1,3 +1,14 @@
+## [1.1.11-dev.1](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.10...v1.1.11-dev.1) (2026-07-21)
+
+### Miscellaneous Chores 🛠️
+
+* **deps-dev:** bump @rollup/plugin-commonjs from 28.0.6 to 29.0.3 ([4a31e66](https://github.com/independo-gmbh/leaflet-independo-maps/commit/4a31e663dedc8dcdaa2952d9675724aa72cf5300))
+* **deps-dev:** bump @rollup/plugin-node-resolve from 16.0.1 to 16.0.3 ([c0bd204](https://github.com/independo-gmbh/leaflet-independo-maps/commit/c0bd204f1121bf62b5193a4a5a4f3bfbbd3bce4a))
+* **deps-dev:** bump semantic-release from 25.0.7 to 25.0.8 ([d7b7150](https://github.com/independo-gmbh/leaflet-independo-maps/commit/d7b715084788733bdcbb14d25369b56db93ad391))
+* **deps:** bump actions/configure-pages in /.github/workflows ([f557a44](https://github.com/independo-gmbh/leaflet-independo-maps/commit/f557a446c8860d805a7d398cb40d748380d4a07b))
+* **deps:** bump actions/deploy-pages from 4 to 5 in /.github/workflows ([834ce8c](https://github.com/independo-gmbh/leaflet-independo-maps/commit/834ce8c63b27be5894d2da24b92fff9bf4841f83))
+* **deps:** bump pnpm/action-setup from 4 to 6 in /.github/workflows ([6c05402](https://github.com/independo-gmbh/leaflet-independo-maps/commit/6c05402cd6edb2e0c8cf0de84f7d7b462e73eaf5))
+
 ## [1.1.10](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.9...v1.1.10) (2026-07-18)
 
 ### Bug Fixes 🛠️
