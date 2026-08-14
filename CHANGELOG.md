@@ -1,3 +1,9 @@
+## [1.1.11-dev.3](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.11-dev.2...v1.1.11-dev.3) (2026-08-14)
+
+### Miscellaneous Chores 🛠️
+
+* **deps:** upgrade typescript to 6.0.3 ([1284dce](https://github.com/independo-gmbh/leaflet-independo-maps/commit/1284dce1de26604e3a1ddfbb657be81871d4a4ad))
+
 ## [1.1.11-dev.2](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.11-dev.1...v1.1.11-dev.2) (2026-08-14)
 
 ### Miscellaneous Chores 🛠️
