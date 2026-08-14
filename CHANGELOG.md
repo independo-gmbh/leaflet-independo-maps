@@ -1,3 +1,18 @@
+## [1.1.11-dev.2](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.11-dev.1...v1.1.11-dev.2) (2026-08-14)
+
+### Miscellaneous Chores 🛠️
+
+* **deps-dev:** bump @eslint/js from 9.31.0 to 10.0.1 ([9445a30](https://github.com/independo-gmbh/leaflet-independo-maps/commit/9445a3038782310a4b26392ab646dd14d7377d55))
+* **deps-dev:** bump eslint from 10.7.0 to 10.8.0 ([9b86d51](https://github.com/independo-gmbh/leaflet-independo-maps/commit/9b86d51d6ebb13553568274e9086761a435e0c16))
+* **deps-dev:** bump globals from 17.7.0 to 17.8.0 ([516cd96](https://github.com/independo-gmbh/leaflet-independo-maps/commit/516cd968eb746da689b7c93c6fe1f8a24b69fb47))
+* **deps-dev:** bump prettier from 3.9.5 to 3.9.6 ([91c99d8](https://github.com/independo-gmbh/leaflet-independo-maps/commit/91c99d88c8a581e5de4f637baec0a87874a9d64a))
+* **deps:** bump pnpm/action-setup in /.github/workflows ([1cf154b](https://github.com/independo-gmbh/leaflet-independo-maps/commit/1cf154b58f27d9a887ed5d66a976770ceafd3f73))
+* **deps:** resolve security vulnerabilities in dependencies ([c58f75f](https://github.com/independo-gmbh/leaflet-independo-maps/commit/c58f75f49fcfb95470aab057f6ad09d86fc66587))
+
+### CI/CD 👷‍♀️
+
+* scope build job permissions to contents:read ([0322cb2](https://github.com/independo-gmbh/leaflet-independo-maps/commit/0322cb2598895adec64de2d5078b037fb3fd3f0d))
+
 ## [1.1.11-dev.1](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.10...v1.1.11-dev.1) (2026-07-21)
 
 ### Miscellaneous Chores 🛠️
