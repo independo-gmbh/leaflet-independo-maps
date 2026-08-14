@@ -1,3 +1,28 @@
+## [1.1.11](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.10...v1.1.11) (2026-08-14)
+
+### Miscellaneous Chores 🛠️
+
+* **deps-dev:** bump @eslint/js from 9.31.0 to 10.0.1 ([9445a30](https://github.com/independo-gmbh/leaflet-independo-maps/commit/9445a3038782310a4b26392ab646dd14d7377d55))
+* **deps-dev:** bump @rollup/plugin-commonjs from 28.0.6 to 29.0.3 ([4a31e66](https://github.com/independo-gmbh/leaflet-independo-maps/commit/4a31e663dedc8dcdaa2952d9675724aa72cf5300))
+* **deps-dev:** bump @rollup/plugin-node-resolve from 16.0.1 to 16.0.3 ([c0bd204](https://github.com/independo-gmbh/leaflet-independo-maps/commit/c0bd204f1121bf62b5193a4a5a4f3bfbbd3bce4a))
+* **deps-dev:** bump eslint from 10.7.0 to 10.8.0 ([9b86d51](https://github.com/independo-gmbh/leaflet-independo-maps/commit/9b86d51d6ebb13553568274e9086761a435e0c16))
+* **deps-dev:** bump globals from 17.7.0 to 17.8.0 ([516cd96](https://github.com/independo-gmbh/leaflet-independo-maps/commit/516cd968eb746da689b7c93c6fe1f8a24b69fb47))
+* **deps-dev:** bump prettier from 3.9.5 to 3.9.6 ([91c99d8](https://github.com/independo-gmbh/leaflet-independo-maps/commit/91c99d88c8a581e5de4f637baec0a87874a9d64a))
+* **deps-dev:** bump semantic-release from 25.0.7 to 25.0.8 ([d7b7150](https://github.com/independo-gmbh/leaflet-independo-maps/commit/d7b715084788733bdcbb14d25369b56db93ad391))
+* **deps:** bump actions/configure-pages in /.github/workflows ([f557a44](https://github.com/independo-gmbh/leaflet-independo-maps/commit/f557a446c8860d805a7d398cb40d748380d4a07b))
+* **deps:** bump actions/deploy-pages from 4 to 5 in /.github/workflows ([834ce8c](https://github.com/independo-gmbh/leaflet-independo-maps/commit/834ce8c63b27be5894d2da24b92fff9bf4841f83))
+* **deps:** bump pnpm/action-setup from 4 to 6 in /.github/workflows ([6c05402](https://github.com/independo-gmbh/leaflet-independo-maps/commit/6c05402cd6edb2e0c8cf0de84f7d7b462e73eaf5))
+* **deps:** bump pnpm/action-setup in /.github/workflows ([1cf154b](https://github.com/independo-gmbh/leaflet-independo-maps/commit/1cf154b58f27d9a887ed5d66a976770ceafd3f73))
+* **deps:** resolve security vulnerabilities in dependencies ([c58f75f](https://github.com/independo-gmbh/leaflet-independo-maps/commit/c58f75f49fcfb95470aab057f6ad09d86fc66587))
+* **deps:** upgrade typescript to 6.0.3 ([1284dce](https://github.com/independo-gmbh/leaflet-independo-maps/commit/1284dce1de26604e3a1ddfbb657be81871d4a4ad))
+* **release:** 1.1.11-dev.1 [skip ci] ([cc96275](https://github.com/independo-gmbh/leaflet-independo-maps/commit/cc96275ccb03046f6628773958c37895640dd906))
+* **release:** 1.1.11-dev.2 [skip ci] ([51d5eb9](https://github.com/independo-gmbh/leaflet-independo-maps/commit/51d5eb97d43720710af16f713460fd44de15fffc))
+* **release:** 1.1.11-dev.3 [skip ci] ([8501fb2](https://github.com/independo-gmbh/leaflet-independo-maps/commit/8501fb22b477db31ca1380e4d9df420c5f738fd3))
+
+### CI/CD 👷‍♀️
+
+* scope build job permissions to contents:read ([0322cb2](https://github.com/independo-gmbh/leaflet-independo-maps/commit/0322cb2598895adec64de2d5078b037fb3fd3f0d))
+
 ## [1.1.11-dev.3](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.11-dev.2...v1.1.11-dev.3) (2026-08-14)
 
 ### Miscellaneous Chores 🛠️
