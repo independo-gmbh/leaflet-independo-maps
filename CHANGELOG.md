@@ -1,3 +1,11 @@
+## [1.1.12-dev.1](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.11...v1.1.12-dev.1) (2026-09-30)
+
+### Miscellaneous Chores 🛠️
+
+* **deps-dev:** bump @rollup/plugin-terser from 0.4.4 to 1.0.0 ([71f7ed0](https://github.com/independo-gmbh/leaflet-independo-maps/commit/71f7ed066a848e11bda4ddd4b8c714e3d813e8f8))
+* **deps:** bump @vitest/mocker ([8f02164](https://github.com/independo-gmbh/leaflet-independo-maps/commit/8f02164569339a8fa14fb039b657fe77ce4e7e9d))
+* **deps:** bump pnpm/action-setup in /.github/workflows ([9ca68c3](https://github.com/independo-gmbh/leaflet-independo-maps/commit/9ca68c3ab9bcc3e782fbf4897084e43f5cdcbea6))
+
 ## [1.1.11](https://github.com/independo-gmbh/leaflet-independo-maps/compare/v1.1.10...v1.1.11) (2026-08-14)
 
 ### Miscellaneous Chores 🛠️
